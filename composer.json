@@ -1,0 +1,9 @@
+{
+    "require": {
+        "symfony/console": "^4.0",
+        "zgetro/phpflickr": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {"": "src/"}
+    }
+}
