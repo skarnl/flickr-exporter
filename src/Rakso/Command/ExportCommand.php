@@ -6,10 +6,13 @@
 
 namespace Rakso\Command;
 
+use Rakso\Service\FlickrService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Dotenv\Dotenv;
 
 class ExportCommand extends Command
 {
@@ -22,29 +25,23 @@ class ExportCommand extends Command
             ->setName('flickr:export')
             ->setDescription('Download flickr albums')
             ->setHelp('This command allows you download flickr album')
+            ->addArgument('destination', InputArgument::OPTIONAL, 'Where to put the files')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->progressBar = new ProgressBar($output, 50);
+        //read .env file
+        $dotenv = new Dotenv();
+        $dotenv->load(__DIR__.'/../../../.env');
 
-        // starts and displays the progress bar
-        $this->progressBar->start();
+        $flickr = new FlickrService(getenv('FLICKR_API_KEY'), getenv('FLICKR_API_SECRET'), getenv('FLICKR_TOKEN'));
+        $flickr->setDestination(getenv('DESTINATION_PATH'));
 
-        $i = 0;
-        while ($i++ < 50) {
-            // ... do some work
+        //not sure if we want this
+        $flickr->setOutput($output);
 
-            // advances the progress bar 1 unit
-            $this->progressBar->advance();
-            usleep(100000);
-
-            // you can also advance the progress bar by more than 1 unit
-            // $progressBar->advance(3);
-        }
-
-        // ensures that the progress bar is at 100%
-        $this->progressBar->finish();
+        $flickr->setOutput($output);
+        $flickr->execute();
     }
 }
