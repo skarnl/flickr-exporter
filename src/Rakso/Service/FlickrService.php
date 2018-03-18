@@ -117,7 +117,7 @@ class FlickrService {
             return sprintf("%s/%s", $setDate->format('Y'), $setDate->format('m'));
         }
 
-        return Str::systemize($set['title']);
+        return Str::systemize($set['title']['_content']);
     }
 
     private function getUniqueFileName($photo, $setPath)
