@@ -81,13 +81,12 @@ class FlickrService {
 
         $this->debug('Setpath: ' . $setPath);
 
-        $photos = $this->flickr->photosets_getPhotos($set['id']);
+        $photos = $this->flickr->photosets_getPhotos($set['id'], 'url_o');
 
         foreach ($photos['photoset']['photo'] as $photo) {
             $this->downloadAndStorePhoto($photo, $setPath);
 
             $this->progressBar->advance();
-            exit;
         }
     }
 
@@ -115,7 +114,7 @@ class FlickrService {
         $setDate = DateTime::createFromFormat('d M Y', '01 ' . $set['title']['_content']);
 
         if ($setDate !== false) {
-            return sprintf("%s/%s", $setDate->format('Y'), $setDate->format('M'));
+            return sprintf("%s/%s", $setDate->format('Y'), $setDate->format('m'));
         }
 
         return Str::systemize($set['title']);
@@ -136,14 +135,14 @@ class FlickrService {
 
     private function downloadAndStorePhoto($photo, $setPath)
     {
-        $photoUrl = $this->flickr->buildPhotoURL($photo, "original");
+        $photoUrl = $photo['url_o'];
         $photoFileName = $this->getUniqueFileName($photo, $setPath);
 
         $this->debug('Photo url: ' . $photoUrl);
         $this->debug('Photo filename: ' . $photoFileName);
         $this->debug('Photo destination path: ' . $setPath . $photoFileName);
 
-        $this->fileSystem->dumpFile($setPath . $photoFileName, $photoUrl);
+        file_put_contents($setPath . $photoFileName, fopen($photoUrl, 'r'));
     }
 
     private function debug($message) {
